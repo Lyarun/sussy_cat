@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Анимация падающих объектов</title>
+<style>
+  canvas {
+    border: 1px solid #000;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="fallingObjectsCanvas" width="800" height="600"></canvas>
+
+<script>
+  const canvas = document.getElementById('fallingObjectsCanvas');
+  const ctx = canvas.getContext('2d');
+  const objects = [];
+
+  function createObject() {
+    return {
+      x: Math.random() * canvas.width,
+      y: 0,
+      size: Math.random() * 5 + 2,
+      speed: Math.random() * 3 + 1
+    };
+  }
+
+  function addObjects() {
+    for (let i = 0; i < 5; i++) {
+      objects.push(createObject());
+    }
+  }
+
+  function drawObject(obj) {
+    ctx.beginPath();
+    ctx.arc(obj.x, obj.y, obj.size, 0, Math.PI * 2);
+    ctx.fillStyle = '#FFF';
+    ctx.fill();
+  }
+
+  function update() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    objects.forEach((obj, index) => {
+      obj.y += obj.speed;
+      if (obj.y > canvas.height) {
+        objects.splice(index, 1);
+        objects.push(createObject());
+      }
+      drawObject(obj);
+    });
+    requestAnimationFrame(update);
+  }
+
+  addObjects();
+  update();
+</script>
+
+</body>
+</html>

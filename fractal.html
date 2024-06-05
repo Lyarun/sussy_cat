@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Снежинка Коха</title>
+<style>
+  canvas {
+    border: 1px solid black;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="kochCanvas" width="800" height="600"></canvas>
+<button onclick="increaseDepth()">Увеличить глубину</button>
+
+<script>
+  const canvas = document.getElementById('kochCanvas');
+  const ctx = canvas.getContext('2d');
+  let depth = 0;
+
+  function drawKochCurve(startX, startY, endX, endY, depth) {
+    if (depth === 0) {
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(endX, endY);
+      ctx.stroke();
+    } else {
+      const deltaX = endX - startX;
+      const deltaY = endY - startY;
+      const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      const unit = dist / 3;
+      const angle = Math.atan2(deltaY, deltaX);
+      const p1X = startX + deltaX / 3;
+      const p1Y = startY + deltaY / 3;
+      const p3X = startX + deltaX * 2 / 3;
+      const p3Y = startY + deltaY * 2 / 3;
+      const p2X = p1X + Math.cos(angle - Math.PI / 3) * unit;
+      const p2Y = p1Y + Math.sin(angle - Math.PI / 3) * unit;
+
+      drawKochCurve(startX, startY, p1X, p1Y, depth - 1);
+      drawKochCurve(p1X, p1Y, p2X, p2Y, depth - 1);
+      drawKochCurve(p2X, p2Y, p3X, p3Y, depth - 1);
+      drawKochCurve(p3X, p3Y, endX, endY, depth - 1);
+    }
+  }
+
+  function drawKochSnowflake() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const side = 300;
+    const height = side * Math.sqrt(3) / 2;
+    const startX = (canvas.width - side) / 2;
+    const startY = (canvas.height - height) / 2;
+    const endX = startX + side;
+    const endY = startY;
+    const topX = (startX + endX) / 2;
+    const topY = startY - height;
+
+    drawKochCurve(startX, startY, endX, endY, depth);
+    drawKochCurve(endX, endY, topX, topY, depth);
+    drawKochCurve(topX, topY, startX, startY, depth);
+  }
+
+  function increaseDepth() {
+    depth++;
+    drawKochSnowflake();
+  }
+
+  drawKochSnowflake();
+</script>
+
+</body>
+</html>
